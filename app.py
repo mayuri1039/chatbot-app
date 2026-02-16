@@ -19,7 +19,16 @@ else:
     print("Warning: HF_TOKEN not found. Using mock responses.")
 
 # Database setup
-DB_NAME = "chat_history.db"
+# Vercel's filesystem is read-only except for /tmp.
+# If running on Vercel, we must use /tmp.
+# We can detect if we are in a read-only environment or just default to /tmp for simplicity in cloud deployments,
+# but for local dev, we want to keep it in the project root.
+import platform
+
+if platform.system() == "Linux": # Vercel runs on Linux
+    DB_NAME = "/tmp/chat_history.db"
+else:
+    DB_NAME = "chat_history.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
